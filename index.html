@@ -66,9 +66,8 @@
           max_tokens: 100            // 最大生成的令牌数，根据需求调整
         })
       })
-      // 将返回的数据转换为 JSON 对象
-      。then(response => response.json())
-      。then(data => {
+      .then(response => response.json())
+      .then(data => {
         // 假设 API 返回的数据格式中，回复文本位于 data.choices[0].text
         const aiReply = data.choices[0].text;
         // 在聊天记录中显示 AI 回复
@@ -76,8 +75,7 @@
         // 聊天记录自动滚动到底部
         chatbox.scrollTop = chatbox.scrollHeight;
       })
-      // 捕获可能出现的错误
-      。catch(error => {
+      .catch(error => {
         console.error('Error:', error);
         chatbox.innerHTML += `<p style="color: red;">出错了: ${error}</p>`;
       });
