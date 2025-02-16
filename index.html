@@ -54,7 +54,7 @@
       chatbox.innerHTML += `<p><strong>你:</strong> ${message}</p>`;
 
       // 发送 POST 请求调用你的 AI 模型 API
-      fetch('http://192.168.71.121:1234/v1/completions', {  // 请将此处 URL 替换为你的 API 地址
+      fetch('http://192.168.71.121:1234/v1', {  // 请将此处 URL 替换为你的 API 地址
         method: 'POST', // 使用 POST 方法
         headers: {
           'Content-Type': 'application/json'  // 声明发送的数据为 JSON 格式
@@ -67,8 +67,8 @@
         })
       })
       // 将返回的数据转换为 JSON 对象
-      .then(response => response.json())
-      .then(data => {
+      。then(response => response.json())
+      。then(data => {
         // 假设 API 返回的数据格式中，回复文本位于 data.choices[0].text
         const aiReply = data.choices[0].text;
         // 在聊天记录中显示 AI 回复
@@ -77,7 +77,7 @@
         chatbox.scrollTop = chatbox.scrollHeight;
       })
       // 捕获可能出现的错误
-      .catch(error => {
+      。catch(error => {
         console.error('Error:', error);
         chatbox.innerHTML += `<p style="color: red;">出错了: ${error}</p>`;
       });
