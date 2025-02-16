@@ -54,7 +54,7 @@
       chatbox.innerHTML += `<p><strong>你:</strong> ${message}</p>`;
 
       // 发送 POST 请求调用你的 AI 模型 API
-      fetch('localhost:1234/v1/completions', {  // 请将此处 URL 替换为你的 API 地址
+      fetch('http://192.168.71.121:1234', {  // 请将此处 URL 替换为你的 API 地址
         method: 'POST', // 使用 POST 方法
         headers: {
           'Content-Type': 'application/json'  // 声明发送的数据为 JSON 格式
