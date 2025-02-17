@@ -48,7 +48,7 @@
     inputForm.addEventListener('submit', function(event) {
       event.preventDefault(); // 阻止表单默认的提交行为（刷新页面）
       const message = userInput.value;
-      if(message.trim() === '') return; // 如果输入为空，不做任何处理
+      if (message.trim() === '') return; // 如果输入为空，不做任何处理
 
       // 在聊天记录中显示用户发送的消息
       chatbox.innerHTML += `<p><strong>你:</strong> ${message}</p>`;
@@ -66,8 +66,8 @@
           max_tokens: 2048            // 最大生成的令牌数，根据需求调整
         })
       })
-      。then(response => response.json())
-      。then(data => {
+      .then(response => response.json())
+      .then(data => {
         // 假设 API 返回的数据格式中，回复文本位于 data.choices[0].text
         const aiReply = data.choices[0].text;
         // 在聊天记录中显示 AI 回复
@@ -75,7 +75,7 @@
         // 聊天记录自动滚动到底部
         chatbox.scrollTop = chatbox.scrollHeight;
       })
-      。catch(error => {
+      .catch(error => {
         console.error('Error:', error);
         chatbox.innerHTML += `<p style="color: red;">出错了: ${error}</p>`;
       });
@@ -85,4 +85,5 @@
   </script>
 </body>
 </html>
+
 
