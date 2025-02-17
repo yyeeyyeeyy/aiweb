@@ -1,89 +1,97 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <!-- 定义文档字符编码和网页标题 -->
   <meta charset="UTF-8">
-  <title>AI 聊天页面</title>
+  <title>AI 聊天页面（支持联网搜索）</title>
   <style>
-    /* 基本的 CSS 样式 */
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
       padding: 20px;
     }
-    /* 聊天记录区域样式 */
     #chatbox {
       width: 100%;
       height: 300px;
       border: 1px solid #ccc;
       padding: 10px;
       background-color: #fff;
-      overflow-y: auto; /* 当内容超出区域时，显示滚动条 */
+      overflow-y: auto;
     }
-    /* 表单的外边距 */
     #inputForm {
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>AI 聊天页面</h1>
-  <!-- 用于显示聊天记录的区域 -->
-  <div id="chatbox">
-    <!-- 聊天记录将追加在这里 -->
-  </div>
-  <!-- 用户输入区域：包含文本输入框和发送按钮 -->
+  <h1>AI 聊天页面（支持联网搜索）</h1>
+  <div id="chatbox"></div>
   <form id="inputForm">
     <input type="text" id="userInput" placeholder="请输入消息" style="width:80%;" />
     <button type="submit">发送</button>
   </form>
 
   <script>
-    // 获取页面中的元素，便于后续操作
     const chatbox = document.getElementById('chatbox');
     const inputForm = document.getElementById('inputForm');
     const userInput = document.getElementById('userInput');
 
-    // 为表单添加提交事件监听器
-    inputForm.addEventListener('submit', function(event) {
-      event.preventDefault(); // 阻止表单默认的提交行为（刷新页面）
+    // 在线搜索函数
+    async function searchOnline(query) {
+      // 替换成你的 Cloudflare Worker URL
+      const workerUrl = 'https://searchproxy.yangyiwei615.workers.dev/?q=' + encodeURIComponent(query)
+      try {
+        const response = await fetch(workerUrl)
+        const data = await response.json()
+        if (data.webPages && data.webPages.value && data.webPages.value.length > 0) {
+          return data.webPages.value[0].snippet
+        }
+        return ''
+      } catch (error) {
+        console.error('搜索错误:', error)
+        return ''
+      }
+    }
+
+    inputForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
       const message = userInput.value;
-      if (message.trim() === '') return; // 如果输入为空，不做任何处理
-
-      // 在聊天记录中显示用户发送的消息
+      if(message.trim() === '') return;
+      
       chatbox.innerHTML += `<p><strong>你:</strong> ${message}</p>`;
-
-      // 发送 POST 请求调用你的 AI 模型 API
-      fetch('https://6f96-124-79-139-202.ngrok-free.app/v1/completions', {  // 请将此处 URL 替换为你的 API 地址
-        method: 'POST', // 使用 POST 方法
+      
+      // 先调用在线搜索函数获取搜索结果
+      const searchResult = await searchOnline(message);
+      // 将搜索结果添加到 prompt 中
+      const promptWithSearch = message + "\n\n【搜索结果】:\n" + searchResult;
+      
+      // 调用 AI 模型 API（请将下面的 URL 和模型名称替换为你的实际信息）
+      fetch('https://6f96-124-79-139-202.ngrok-free.app/v1/completions', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'  // 声明发送的数据为 JSON 格式
+          'Content-Type': 'application/json'
         },
-        // 将请求参数转换成 JSON 字符串
         body: JSON.stringify({
-          model: 'DeepSeek-R1-Distill-Qwen-32B-Q4_K_M',  // 替换为你的模型名称
-          prompt: message,           // 用户输入的消息作为 prompt
-          max_tokens: 2048            // 最大生成的令牌数，根据需求调整
+          model: 'DeepSeek-R1-Distill-Qwen-32B-Q4_K_M',
+          prompt: promptWithSearch,
+          max_tokens: 100
         })
       })
       .then(response => response.json())
       .then(data => {
-        // 假设 API 返回的数据格式中，回复文本位于 data.choices[0].text
         const aiReply = data.choices[0].text;
-        // 在聊天记录中显示 AI 回复
         chatbox.innerHTML += `<p><strong>AI:</strong> ${aiReply}</p>`;
-        // 聊天记录自动滚动到底部
         chatbox.scrollTop = chatbox.scrollHeight;
       })
       .catch(error => {
-        console.error('Error:', error);
+        console.error('错误:', error);
         chatbox.innerHTML += `<p style="color: red;">出错了: ${error}</p>`;
       });
-
-      userInput.value = ''; // 清空输入框，方便下次输入
+      
+      userInput.value = '';
     });
   </script>
 </body>
 </html>
+
 
 
