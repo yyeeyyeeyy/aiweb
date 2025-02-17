@@ -73,7 +73,7 @@
         body: JSON.stringify({
           model: 'DeepSeek-R1-Distill-Qwen-32B-Q4_K_M',
           prompt: promptWithSearch,
-          max_tokens: 100
+          max_tokens: 2048
         })
       })
       .then(response => response.json())
